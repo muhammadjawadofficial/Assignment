@@ -15,14 +15,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvCurrVal = (TextView) findViewById(R.id.currValue);
-        tvPrevVal = (TextView) findViewById(R.id.prevValue);
+        tvCurrVal = findViewById(R.id.currValue);
+        tvPrevVal = findViewById(R.id.prevValue);
         reset(findViewById(R.id.reset));
     }
 
     void checkAndAdd(String x) {
         String str = tvCurrVal.getText().toString();
-        Boolean operator;
         if (str.equals("0")) {
             if (x != "0" && x != "00" && !ResetAndSet(x))
                 tvCurrVal.setText(x);
@@ -71,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public float calculateResult(String expression, String delim) {
+        expression = expression.replaceAll("\\,", "");
         String[] stringTokens = expression.split(delim);
-        float result = 0;
-
+        float result;
         result = Float.parseFloat(stringTokens[0]);
         for (int i = 1; i < stringTokens.length; i++) {
             if (delim.equals("\\+")) {
@@ -85,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
             } else if (delim.equals("\\/")) {
                 result /= Float.parseFloat(stringTokens[i]);
             } else {
+                return result;
             }
-//            result = Math.addExact(result, Integer.parseInt(stringTokens[i]));
         }
         return result;
     }
@@ -111,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
             division = false;
         } else {
             result = tvCurrVal.getText().toString();
+            result = result.replaceAll("\\,", "");
         }
         tvPrevVal.setText(tvCurrVal.getText().toString());
         if (Float.parseFloat(result) == Math.floor(Float.parseFloat(result)))
@@ -165,21 +165,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void appendAddition(View view) {
+        if (tvCurrVal.getText().toString().endsWith(","))
+            tvCurrVal.setText(removeLastChar(tvCurrVal.getText().toString()));
         checkAndAdd("+");
         addition = true;
     }
 
     public void appendSubtraction(View view) {
+        if (tvCurrVal.getText().toString().endsWith(","))
+            tvCurrVal.setText(removeLastChar(tvCurrVal.getText().toString()));
         checkAndAdd("-");
         subtraction = true;
     }
 
     public void appendMultiplication(View view) {
+        if (tvCurrVal.getText().toString().endsWith(","))
+            tvCurrVal.setText(removeLastChar(tvCurrVal.getText().toString()));
         checkAndAdd("*");
         multiplication = true;
     }
 
     public void appendDivision(View view) {
+        if (tvCurrVal.getText().toString().endsWith(","))
+            tvCurrVal.setText(removeLastChar(tvCurrVal.getText().toString()));
         checkAndAdd("/");
         division = true;
     }
@@ -193,7 +201,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void appendComma(View view) {
-        checkAndAdd(",");
+        String str = tvCurrVal.getText().toString();
+        if (!(str.endsWith(",")) && !(str.endsWith("+")) && !(str.endsWith("-")) && !(str.endsWith("*")) && !(str.endsWith("/")))
+            checkAndAdd(",");
     }
 
     public void removeCharacter(View view) {
