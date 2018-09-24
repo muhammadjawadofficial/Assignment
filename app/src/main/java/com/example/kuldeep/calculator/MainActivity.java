@@ -5,10 +5,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
     TextView tvCurrVal, tvPrevVal;
     String result;
-    boolean addition, subtraction, multiplication, division;
+    boolean addition, subtraction, multiplication, division, commaFormatted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     public void reset(View view) {
         tvPrevVal.setText(" ");
         tvCurrVal.setText("0");
+        commaFormatted = false;
         resetAll();
     }
 
@@ -70,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public float calculateResult(String expression, String delim) {
-        expression = expression.replaceAll("\\,", "");
+        expression = expression.replaceAll(",", "");
         String[] stringTokens = expression.split(delim);
         float result;
         result = Float.parseFloat(stringTokens[0]);
@@ -201,9 +205,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void appendComma(View view) {
+//        String str = tvCurrVal.getText().toString();
+//        if (!(str.endsWith(",")) && !(str.endsWith("+")) && !(str.endsWith("-")) && !(str.endsWith("*")) && !(str.endsWith("/")))
+//            checkAndAdd(",");
         String str = tvCurrVal.getText().toString();
-        if (!(str.endsWith(",")) && !(str.endsWith("+")) && !(str.endsWith("-")) && !(str.endsWith("*")) && !(str.endsWith("/")))
-            checkAndAdd(",");
+//        if (addition == true) {
+//
+//        }
+        if (str.length() > 3)
+            if (commaFormatted) {
+                str = str.replaceAll(",", "");
+                tvCurrVal.setText(str);
+                commaFormatted = false;
+            } else {
+                tvCurrVal.setText(getFormattedAmount(Integer.parseInt(str)));
+                commaFormatted = true;
+            }
+        else if (commaFormatted) {
+            str = str.replaceAll(",", "");
+            tvCurrVal.setText(str);
+            commaFormatted = false;
+        }
     }
 
     public void removeCharacter(View view) {
@@ -214,5 +236,9 @@ public class MainActivity extends AppCompatActivity {
         if (str.length() == 1 || str.equals("0"))
             return "0";
         return str.substring(0, str.length() - 1);
+    }
+
+    private String getFormattedAmount(int amount) {
+        return NumberFormat.getNumberInstance(Locale.US).format(amount);
     }
 }
